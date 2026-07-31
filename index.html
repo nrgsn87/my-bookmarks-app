@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Bookmarks</title>
+<style>
+  :root {
+    --blue-50:  #eff6ff;
+    --blue-100: #dbeafe;
+    --blue-200: #bfdbfe;
+    --blue-500: #3b82f6;
+    --blue-600: #2563eb;
+    --blue-700: #1d4ed8;
+    --bg:       #f4f7fb;
+    --card:     #ffffff;
+    --text:     #1e293b;
+    --muted:    #64748b;
+    --border:   #e2e8f0;
+    --danger:   #ef4444;
+    --shadow:   0 1px 3px rgba(15, 23, 42, .08), 0 4px 12px rgba(15, 23, 42, .05);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  /* Header */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 1px 6px rgba(15, 23, 42, .04);
+  }
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .logo {
+    width: 34px; height: 34px;
+    border-radius: 9px;
+    background: linear-gradient(135deg, var(--blue-500), var(--blue-700));
+    display: grid; place-items: center;
+    color: #fff; font-size: 18px;
+    flex-shrink: 0;
+  }
+  h1 {
+    font-size: 20px;
+    margin: 0;
+    font-weight: 700;
+  }
+  .count {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .search-wrap {
+    margin-left: auto;
+    position: relative;
+    flex: 1 1 240px;
+    max-width: 340px;
+  }
+  #search {
+    width: 100%;
+    padding: 10px 14px 10px 36px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color .15s, box-shadow .15s;
+    background: var(--bg);
+  }
+  #search:focus {
+    border-color: var(--blue-500);
+    box-shadow: 0 0 0 3px var(--blue-100);
+    background: #fff;
+  }
+  .search-wrap svg {
+    position: absolute;
+    left: 11px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    pointer-events: none;
+  }
+
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+
+  /* Add form */
+  .add-panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    margin-bottom: 24px;
+  }
+  .add-panel h2 {
+    margin: 0 0 16px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field.full { grid-column: 1 / -1; }
+  .field label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+  .field input, .field textarea {
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .field input:focus, .field textarea:focus {
+    border-color: var(--blue-500);
+    box-shadow: 0 0 0 3px var(--blue-100);
+  }
+  .field textarea { resize: vertical; min-height: 42px; }
+  .form-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 4px;
+  }
+  .btn {
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    border-radius: 9px;
+    padding: 10px 20px;
+    transition: background .15s, transform .05s;
+  }
+  .btn-primary {
+    background: var(--blue-600);
+    color: #fff;
+  }
+  .btn-primary:hover { background: var(--blue-700); }
+  .btn-primary:active { transform: translateY(1px); }
+  .form-error {
+    color: var(--danger);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  /* Filters */
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .chip {
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--muted);
+    padding: 7px 15px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .chip:hover { border-color: var(--blue-300, #93c5fd); color: var(--blue-700); }
+  .chip.active {
+    background: var(--blue-600);
+    border-color: var(--blue-600);
+    color: #fff;
+  }
+
+  /* Cards grid */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: transform .12s, box-shadow .12s;
+  }
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(15, 23, 42, .1);
+  }
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .card-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--blue-700);
+    text-decoration: none;
+    word-break: break-word;
+  }
+  .card-title:hover { text-decoration: underline; }
+  .card-url {
+    font-size: 12px;
+    color: var(--muted);
+    word-break: break-all;
+    text-decoration: none;
+  }
+  .card-url:hover { color: var(--blue-600); }
+  .badge {
+    align-self: flex-start;
+    background: var(--blue-50);
+    color: var(--blue-700);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--blue-100);
+  }
+  .card-notes {
+    font-size: 13px;
+    color: var(--text);
+    opacity: .85;
+    word-break: break-word;
+  }
+  .delete-btn {
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 7px;
+    line-height: 0;
+    flex-shrink: 0;
+    transition: background .15s, color .15s;
+  }
+  .delete-btn:hover { background: #fee2e2; color: var(--danger); }
+
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+  .empty svg { opacity: .4; margin-bottom: 12px; }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .header-inner { padding: 14px 16px; }
+    .search-wrap { margin-left: 0; max-width: none; order: 3; flex-basis: 100%; }
+    main { padding: 16px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="logo">🔖</div>
+      <div>
+        <h1>My Bookmarks</h1>
+        <div class="count" id="count"></div>
+      </div>
+      <div class="search-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="search" placeholder="Search by title or category…" autocomplete="off">
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="add-panel">
+      <h2>Add a bookmark</h2>
+      <form id="add-form" class="form-grid" novalidate>
+        <div class="field">
+          <label for="f-title">Title *</label>
+          <input type="text" id="f-title" placeholder="e.g. Anthropic" required>
+        </div>
+        <div class="field">
+          <label for="f-url">URL *</label>
+          <input type="text" id="f-url" placeholder="e.g. anthropic.com" required>
+        </div>
+        <div class="field">
+          <label for="f-category">Category</label>
+          <input type="text" id="f-category" placeholder="e.g. Work" list="cat-list">
+          <datalist id="cat-list"></datalist>
+        </div>
+        <div class="field">
+          <label for="f-notes">Notes (optional)</label>
+          <input type="text" id="f-notes" placeholder="Anything worth remembering">
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Add bookmark</button>
+          <span class="form-error" id="form-error"></span>
+        </div>
+      </form>
+    </section>
+
+    <div class="filters" id="filters"></div>
+    <div class="grid" id="grid"></div>
+  </main>
+
+<script>
+(function () {
+  "use strict";
+
+  var STORAGE_KEY = "bookmarks";
+
+  var SAMPLES = [
+    { title: "Anthropic",   url: "https://www.anthropic.com",        category: "AI",       notes: "Makers of Claude." },
+    { title: "MDN Web Docs", url: "https://developer.mozilla.org",   category: "Dev",      notes: "The web platform reference." },
+    { title: "Hacker News", url: "https://news.ycombinator.com",     category: "News",     notes: "Tech news & discussion." },
+    { title: "GitHub",      url: "https://github.com",               category: "Dev",      notes: "Code hosting & collaboration." },
+    { title: "Figma",       url: "https://www.figma.com",            category: "Design",   notes: "Collaborative design tool." },
+    { title: "Wikipedia",   url: "https://www.wikipedia.org",        category: "Reference", notes: "Free encyclopedia." }
+  ];
+
+  var grid       = document.getElementById("grid");
+  var filtersEl  = document.getElementById("filters");
+  var countEl    = document.getElementById("count");
+  var searchEl   = document.getElementById("search");
+  var form       = document.getElementById("add-form");
+  var errorEl    = document.getElementById("form-error");
+  var catListEl  = document.getElementById("cat-list");
+
+  var bookmarks   = [];
+  var activeCat   = "All";
+  var searchTerm  = "";
+
+  // ---- Persistence ----
+  function loadBookmarks() {
+    var raw = null;
+    try { raw = localStorage.getItem(STORAGE_KEY); } catch (e) { raw = null; }
+    if (raw === null) {
+      // First ever load: seed samples.
+      bookmarks = SAMPLES.map(withId);
+      saveBookmarks();
+      return;
+    }
+    try {
+      var parsed = JSON.parse(raw);
+      bookmarks = Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      bookmarks = [];
+    }
+  }
+
+  function saveBookmarks() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(bookmarks)); } catch (e) {}
+  }
+
+  function withId(b) {
+    return {
+      id: (Date.now().toString(36) + Math.random().toString(36).slice(2, 8)),
+      title: b.title, url: b.url, category: b.category || "", notes: b.notes || ""
+    };
+  }
+
+  // ---- Helpers ----
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function normalizeUrl(url) {
+    var u = url.trim();
+    if (!u) return "";
+    if (!/^https?:\/\//i.test(u)) u = "https://" + u;
+    return u;
+  }
+
+  function displayHost(url) {
+    try { return new URL(url).hostname.replace(/^www\./, ""); }
+    catch (e) { return url; }
+  }
+
+  function categories() {
+    var set = {};
+    bookmarks.forEach(function (b) {
+      var c = (b.category || "").trim();
+      if (c) set[c] = true;
+    });
+    return Object.keys(set).sort(function (a, b) {
+      return a.toLowerCase().localeCompare(b.toLowerCase());
+    });
+  }
+
+  // ---- Rendering ----
+  function renderFilters() {
+    var cats = ["All"].concat(categories());
+    if (cats.indexOf(activeCat) === -1) activeCat = "All";
+    filtersEl.innerHTML = "";
+    cats.forEach(function (cat) {
+      var chip = document.createElement("button");
+      chip.className = "chip" + (cat === activeCat ? " active" : "");
+      chip.textContent = cat;
+      chip.addEventListener("click", function () {
+        activeCat = cat;
+        render();
+      });
+      filtersEl.appendChild(chip);
+    });
+
+    // Keep datalist of categories for the form input.
+    catListEl.innerHTML = "";
+    categories().forEach(function (c) {
+      var opt = document.createElement("option");
+      opt.value = c;
+      catListEl.appendChild(opt);
+    });
+  }
+
+  function matches(b) {
+    if (activeCat !== "All" && (b.category || "") !== activeCat) return false;
+    if (searchTerm) {
+      var hay = (b.title + " " + (b.category || "")).toLowerCase();
+      if (hay.indexOf(searchTerm) === -1) return false;
+    }
+    return true;
+  }
+
+  function render() {
+    renderFilters();
+
+    var visible = bookmarks.filter(matches);
+    countEl.textContent =
+      bookmarks.length + (bookmarks.length === 1 ? " bookmark" : " bookmarks") +
+      (visible.length !== bookmarks.length ? " · " + visible.length + " shown" : "");
+
+    grid.innerHTML = "";
+
+    if (visible.length === 0) {
+      var empty = document.createElement("div");
+      empty.className = "empty";
+      empty.style.gridColumn = "1 / -1";
+      empty.innerHTML =
+        '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>' +
+        "<div>" + (bookmarks.length === 0
+          ? "No bookmarks yet — add your first one above."
+          : "No bookmarks match your search or filter.") + "</div>";
+      grid.appendChild(empty);
+      return;
+    }
+
+    visible.forEach(function (b) {
+      var card = document.createElement("div");
+      card.className = "card";
+
+      var badge = b.category
+        ? '<span class="badge">' + escapeHtml(b.category) + "</span>" : "";
+      var notes = b.notes
+        ? '<div class="card-notes">' + escapeHtml(b.notes) + "</div>" : "";
+      var safeUrl = escapeHtml(b.url);
+
+      card.innerHTML =
+        '<div class="card-top">' +
+          '<div>' +
+            '<a class="card-title" href="' + safeUrl + '" target="_blank" rel="noopener noreferrer">' +
+              escapeHtml(b.title) + "</a>" +
+          "</div>" +
+          '<button class="delete-btn" title="Delete bookmark" aria-label="Delete bookmark">' +
+            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>' +
+          "</button>" +
+        "</div>" +
+        '<a class="card-url" href="' + safeUrl + '" target="_blank" rel="noopener noreferrer">' +
+          escapeHtml(displayHost(b.url)) + "</a>" +
+        badge + notes;
+
+      card.querySelector(".delete-btn").addEventListener("click", function () {
+        deleteBookmark(b.id);
+      });
+
+      grid.appendChild(card);
+    });
+  }
+
+  // ---- Mutations ----
+  function addBookmark(data) {
+    bookmarks.unshift(withId(data));
+    saveBookmarks();
+    render();
+  }
+
+  function deleteBookmark(id) {
+    bookmarks = bookmarks.filter(function (b) { return b.id !== id; });
+    saveBookmarks();
+    render();
+  }
+
+  // ---- Events ----
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    errorEl.textContent = "";
+
+    var title = document.getElementById("f-title").value.trim();
+    var url   = document.getElementById("f-url").value.trim();
+    var cat   = document.getElementById("f-category").value.trim();
+    var notes = document.getElementById("f-notes").value.trim();
+
+    if (!title) { errorEl.textContent = "Please enter a title."; return; }
+    if (!url)   { errorEl.textContent = "Please enter a URL."; return; }
+
+    addBookmark({ title: title, url: normalizeUrl(url), category: cat, notes: notes });
+    form.reset();
+    document.getElementById("f-title").focus();
+  });
+
+  searchEl.addEventListener("input", function () {
+    searchTerm = searchEl.value.trim().toLowerCase();
+    render();
+  });
+
+  // ---- Init ----
+  loadBookmarks();
+  render();
+})();
+</script>
+</body>
+</html>
