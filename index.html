@@ -12,6 +12,7 @@
     --blue-500: #3b82f6;
     --blue-600: #2563eb;
     --blue-700: #1d4ed8;
+    --accent:   #1d4ed8;
     --bg:       #f4f7fb;
     --card:     #ffffff;
     --text:     #1e293b;
@@ -19,6 +20,18 @@
     --border:   #e2e8f0;
     --danger:   #ef4444;
     --shadow:   0 1px 3px rgba(15, 23, 42, .08), 0 4px 12px rgba(15, 23, 42, .05);
+  }
+
+  :root[data-theme="dark"] {
+    --blue-50:  #172554;
+    --blue-100: #1e3a8a;
+    --accent:   #93c5fd;
+    --bg:       #0f172a;
+    --card:     #1e293b;
+    --text:     #e2e8f0;
+    --muted:    #94a3b8;
+    --border:   #334155;
+    --shadow:   0 1px 3px rgba(0, 0, 0, .4), 0 4px 12px rgba(0, 0, 0, .3);
   }
 
   * { box-sizing: border-box; }
@@ -29,6 +42,7 @@
     background: var(--bg);
     color: var(--text);
     line-height: 1.5;
+    transition: background-color .2s ease, color .2s ease;
   }
 
   /* Header */
@@ -82,11 +96,12 @@
     outline: none;
     transition: border-color .15s, box-shadow .15s;
     background: var(--bg);
+    color: var(--text);
   }
   #search:focus {
     border-color: var(--blue-500);
     box-shadow: 0 0 0 3px var(--blue-100);
-    background: #fff;
+    background: var(--card);
   }
   .search-wrap svg {
     position: absolute;
@@ -95,6 +110,20 @@
     color: var(--muted);
     pointer-events: none;
   }
+  .theme-toggle {
+    flex-shrink: 0;
+    width: 40px; height: 40px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 0;
+    display: grid; place-items: center;
+    transition: background .15s, border-color .15s;
+  }
+  .theme-toggle:hover { border-color: var(--blue-500); }
 
   main {
     max-width: 1100px;
@@ -102,7 +131,7 @@
     padding: 24px;
   }
 
-  /* Add form */
+  /* Add / edit form */
   .add-panel {
     background: var(--card);
     border: 1px solid var(--border);
@@ -138,6 +167,8 @@
     font-size: 14px;
     font-family: inherit;
     outline: none;
+    background: var(--card);
+    color: var(--text);
     transition: border-color .15s, box-shadow .15s;
   }
   .field input:focus, .field textarea:focus {
@@ -168,6 +199,11 @@
   }
   .btn-primary:hover { background: var(--blue-700); }
   .btn-primary:active { transform: translateY(1px); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+  }
+  .btn-ghost:hover { background: var(--bg); color: var(--text); }
   .form-error {
     color: var(--danger);
     font-size: 13px;
@@ -192,7 +228,7 @@
     cursor: pointer;
     transition: all .15s;
   }
-  .chip:hover { border-color: var(--blue-300, #93c5fd); color: var(--blue-700); }
+  .chip:hover { border-color: var(--blue-500); color: var(--accent); }
   .chip.active {
     background: var(--blue-600);
     border-color: var(--blue-600);
@@ -220,6 +256,10 @@
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(15, 23, 42, .1);
   }
+  .card.editing {
+    border-color: var(--blue-500);
+    box-shadow: 0 0 0 2px var(--blue-100);
+  }
   .card-top {
     display: flex;
     justify-content: space-between;
@@ -229,7 +269,7 @@
   .card-title {
     font-size: 16px;
     font-weight: 700;
-    color: var(--blue-700);
+    color: var(--accent);
     text-decoration: none;
     word-break: break-word;
   }
@@ -240,11 +280,11 @@
     word-break: break-all;
     text-decoration: none;
   }
-  .card-url:hover { color: var(--blue-600); }
+  .card-url:hover { color: var(--blue-500); }
   .badge {
     align-self: flex-start;
     background: var(--blue-50);
-    color: var(--blue-700);
+    color: var(--accent);
     font-size: 11px;
     font-weight: 600;
     padding: 3px 10px;
@@ -257,18 +297,20 @@
     opacity: .85;
     word-break: break-word;
   }
-  .delete-btn {
+  .card-actions { display: flex; gap: 2px; flex-shrink: 0; }
+  .icon-btn {
     border: none;
     background: transparent;
     color: var(--muted);
     cursor: pointer;
-    padding: 4px;
+    padding: 5px;
     border-radius: 7px;
     line-height: 0;
-    flex-shrink: 0;
     transition: background .15s, color .15s;
   }
+  .edit-btn:hover { background: var(--blue-50); color: var(--accent); }
   .delete-btn:hover { background: #fee2e2; color: var(--danger); }
+  :root[data-theme="dark"] .delete-btn:hover { background: #422; }
 
   .empty {
     text-align: center;
@@ -299,12 +341,13 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <input type="text" id="search" placeholder="Search by title or category…" autocomplete="off">
       </div>
+      <button class="theme-toggle" id="theme-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
     </div>
   </header>
 
   <main>
     <section class="add-panel">
-      <h2>Add a bookmark</h2>
+      <h2 id="panel-title">Add a bookmark</h2>
       <form id="add-form" class="form-grid" novalidate>
         <div class="field">
           <label for="f-title">Title *</label>
@@ -324,7 +367,8 @@
           <input type="text" id="f-notes" placeholder="Anything worth remembering">
         </div>
         <div class="form-actions">
-          <button type="submit" class="btn btn-primary">Add bookmark</button>
+          <button type="submit" class="btn btn-primary" id="submit-btn">Add bookmark</button>
+          <button type="button" class="btn btn-ghost" id="cancel-btn" style="display:none;">Cancel</button>
           <span class="form-error" id="form-error"></span>
         </div>
       </form>
@@ -339,6 +383,7 @@
   "use strict";
 
   var STORAGE_KEY = "bookmarks";
+  var THEME_KEY   = "theme";
 
   var SAMPLES = [
     { title: "Anthropic",   url: "https://www.anthropic.com",        category: "AI",       notes: "Makers of Claude." },
@@ -356,10 +401,20 @@
   var form       = document.getElementById("add-form");
   var errorEl    = document.getElementById("form-error");
   var catListEl  = document.getElementById("cat-list");
+  var panelTitle = document.getElementById("panel-title");
+  var submitBtn  = document.getElementById("submit-btn");
+  var cancelBtn  = document.getElementById("cancel-btn");
+  var themeBtn   = document.getElementById("theme-toggle");
+
+  var fTitle = document.getElementById("f-title");
+  var fUrl   = document.getElementById("f-url");
+  var fCat   = document.getElementById("f-category");
+  var fNotes = document.getElementById("f-notes");
 
   var bookmarks   = [];
   var activeCat   = "All";
   var searchTerm  = "";
+  var editingId   = null;
 
   // ---- Persistence ----
   function loadBookmarks() {
@@ -482,7 +537,7 @@
 
     visible.forEach(function (b) {
       var card = document.createElement("div");
-      card.className = "card";
+      card.className = "card" + (b.id === editingId ? " editing" : "");
 
       var badge = b.category
         ? '<span class="badge">' + escapeHtml(b.category) + "</span>" : "";
@@ -496,14 +551,22 @@
             '<a class="card-title" href="' + safeUrl + '" target="_blank" rel="noopener noreferrer">' +
               escapeHtml(b.title) + "</a>" +
           "</div>" +
-          '<button class="delete-btn" title="Delete bookmark" aria-label="Delete bookmark">' +
-            '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>' +
-          "</button>" +
+          '<div class="card-actions">' +
+            '<button class="icon-btn edit-btn" title="Edit bookmark" aria-label="Edit bookmark">' +
+              '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>' +
+            "</button>" +
+            '<button class="icon-btn delete-btn" title="Delete bookmark" aria-label="Delete bookmark">' +
+              '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>' +
+            "</button>" +
+          "</div>" +
         "</div>" +
         '<a class="card-url" href="' + safeUrl + '" target="_blank" rel="noopener noreferrer">' +
           escapeHtml(displayHost(b.url)) + "</a>" +
         badge + notes;
 
+      card.querySelector(".edit-btn").addEventListener("click", function () {
+        startEdit(b.id);
+      });
       card.querySelector(".delete-btn").addEventListener("click", function () {
         deleteBookmark(b.id);
       });
@@ -519,28 +582,109 @@
     render();
   }
 
+  function updateBookmark(id, data) {
+    bookmarks = bookmarks.map(function (b) {
+      if (b.id !== id) return b;
+      return { id: b.id, title: data.title, url: data.url, category: data.category, notes: data.notes };
+    });
+    saveBookmarks();
+    render();
+  }
+
   function deleteBookmark(id) {
+    if (id === editingId) exitEditMode();
     bookmarks = bookmarks.filter(function (b) { return b.id !== id; });
     saveBookmarks();
     render();
   }
+
+  // ---- Edit mode ----
+  function startEdit(id) {
+    var b = null;
+    bookmarks.forEach(function (x) { if (x.id === id) b = x; });
+    if (!b) return;
+
+    editingId = id;
+    fTitle.value = b.title;
+    fUrl.value   = b.url;
+    fCat.value   = b.category || "";
+    fNotes.value = b.notes || "";
+
+    panelTitle.textContent = "Edit bookmark";
+    submitBtn.textContent  = "Save changes";
+    cancelBtn.style.display = "";
+    errorEl.textContent = "";
+
+    render(); // highlight the card being edited
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    fTitle.focus();
+  }
+
+  function exitEditMode() {
+    editingId = null;
+    form.reset();
+    panelTitle.textContent = "Add a bookmark";
+    submitBtn.textContent  = "Add bookmark";
+    cancelBtn.style.display = "none";
+    errorEl.textContent = "";
+  }
+
+  // ---- Theme ----
+  function applyTheme(theme) {
+    if (theme === "dark") {
+      document.documentElement.setAttribute("data-theme", "dark");
+      themeBtn.textContent = "☀️";
+    } else {
+      document.documentElement.removeAttribute("data-theme");
+      themeBtn.textContent = "🌙";
+    }
+  }
+
+  function initTheme() {
+    var saved = null;
+    try { saved = localStorage.getItem(THEME_KEY); } catch (e) {}
+    if (saved !== "dark" && saved !== "light") {
+      saved = (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)
+        ? "dark" : "light";
+    }
+    applyTheme(saved);
+  }
+
+  themeBtn.addEventListener("click", function () {
+    var isDark = document.documentElement.getAttribute("data-theme") === "dark";
+    var next = isDark ? "light" : "dark";
+    applyTheme(next);
+    try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
+  });
 
   // ---- Events ----
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     errorEl.textContent = "";
 
-    var title = document.getElementById("f-title").value.trim();
-    var url   = document.getElementById("f-url").value.trim();
-    var cat   = document.getElementById("f-category").value.trim();
-    var notes = document.getElementById("f-notes").value.trim();
+    var title = fTitle.value.trim();
+    var url   = fUrl.value.trim();
+    var cat   = fCat.value.trim();
+    var notes = fNotes.value.trim();
 
     if (!title) { errorEl.textContent = "Please enter a title."; return; }
     if (!url)   { errorEl.textContent = "Please enter a URL."; return; }
 
-    addBookmark({ title: title, url: normalizeUrl(url), category: cat, notes: notes });
-    form.reset();
-    document.getElementById("f-title").focus();
+    var data = { title: title, url: normalizeUrl(url), category: cat, notes: notes };
+
+    if (editingId) {
+      updateBookmark(editingId, data);
+      exitEditMode();
+    } else {
+      addBookmark(data);
+      form.reset();
+      fTitle.focus();
+    }
+  });
+
+  cancelBtn.addEventListener("click", function () {
+    exitEditMode();
+    render();
   });
 
   searchEl.addEventListener("input", function () {
@@ -549,6 +693,7 @@
   });
 
   // ---- Init ----
+  initTheme();
   loadBookmarks();
   render();
 })();
